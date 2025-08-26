@@ -87,3 +87,47 @@ const movies = [
   
 
 // ... your code here
+
+const mongoose = require("mongoose");
+const Movie = require("../models/Movie.model");
+
+// Connect to DB
+mongoose
+  .connect("mongodb://127.0.0.1:27017/express-cinema", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then((x) => {
+    console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`);
+  })
+  .catch((err) => {
+    console.error("Error connecting to mongo", err);
+  });
+
+// Movies array
+const movies = [
+  {
+    title: "Red Sparrow",
+    director: "Francis Lawrence",
+    stars: ["Jennifer Lawrence", "Joel Edgerton", "Matthias Schoenaerts"],
+    image:
+      "https://images-na.ssl-images-amazon.com/images/M/MV5BMTA3MDkxOTc4NDdeQTJeQWpwZ15BbWU4MDAxNzgyNTQz._V1_UX182_CR0,0,182,268_AL_.jpg",
+    description:
+      "Ballerina Dominika Egorova is recruited to 'Sparrow School,' a Russian intelligence service where she is forced to use her body as a weapon. Her first mission, targeting a C.I.A. agent, threatens to unravel the security of both nations.",
+    showtimes: ["13:00", "15:30", "18:00", "20:10", "22:40"],
+  },
+  // 👉 Add the other 7 movies here from the README
+];
+
+// Delete old movies & seed new ones
+Movie.deleteMany()
+  .then(() => {
+    return Movie.insertMany(movies);
+  })
+  .then((insertedMovies) => {
+    console.log(`Successfully inserted ${insertedMovies.length} movies!`);
+    mongoose.connection.close();
+  })
+  .catch((err) => {
+    console.error("Error seeding the database", err);
+  });
